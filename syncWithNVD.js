@@ -1,4 +1,6 @@
-﻿const path = require('path');
+﻿'use strict'
+
+const path = require('path');
 const fs = require("fs");
 const https = require('https');
 const zlib = require('zlib');
@@ -55,7 +57,6 @@ async function unzipJsonGz(year) {
     });
 }
 
-
 async function downloadAllCve() {
     return new Promise(async resolve => {
         tryCreateDirForData()
@@ -83,12 +84,6 @@ async function syncWithNVD() {
     await downloadAllCve();
     await unzipAllCve();
 }
-
-async function s() {
-    await unzipAllCve()
-}
-
-//s();
 
 module.exports = {
     syncWithNVD: syncWithNVD
