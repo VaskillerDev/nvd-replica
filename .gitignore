@@ -1,3 +1,7 @@
+# default
 /.idea
 /node_modules
+# dir with data
 /cve
+# typescript
+/dist
