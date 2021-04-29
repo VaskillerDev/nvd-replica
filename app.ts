@@ -3,8 +3,8 @@ import fs from 'fs'
 import https, { ServerOptions } from 'https'
 import http, { IncomingMessage, ServerResponse } from 'http'
 
-const { syncWithNVD } = require('./syncWithNVD')
-const routes = require('./routes')
+import syncWithNVD from './syncWithNVD'
+import * as Routes from "./routes";
 
 type SchedulerContainer = {
     [key: string]: string
@@ -12,10 +12,10 @@ type SchedulerContainer = {
 type MaybeBuffer = Buffer | string
 
 const time: SchedulerContainer = Object.create(null) as SchedulerContainer
-time['00:00:30'] = '30 * * * * *'
+time['00:00:50'] = '50 * * * * *'
 time['04:00:30'] = '30 * 4 * * *'
 
-scheduler.scheduleJob(time['04:00:30'], syncWithNVD) // download cve archives in this time
+scheduler.scheduleJob(time['00:00:50'], syncWithNVD) // download cve archives in this time
 
 const port = 3000
 const key: MaybeBuffer =
@@ -34,6 +34,6 @@ function onStartCallback() {
 
 const server = useHttps ? https.createServer(options) : http.createServer()
 server.on('request', function (req: IncomingMessage, res: ServerResponse) {
-    routes.resolve(req, res)
+    Routes.resolve(req, res)
 })
 server.listen(port, onStartCallback)
