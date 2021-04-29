@@ -1,9 +1,18 @@
 ﻿'use strict'
+
+import { IncomingMessage, ServerResponse } from 'http'
+
 const { trimParams, eqStr, extractParams } = require('./utils')
 
-const routes = [{ path: '/getComponent', method: 'get', resolve: getComponent }]
+type Method = 'post' | 'get' | 'put' | 'delete'
+type ResolveFuncSignature = (req: IncomingMessage, res: ServerResponse) => void
+type Route = { path: string; method: Method; resolve: ResolveFuncSignature }
 
-function getComponent(req, res) {
+const routes: Array<Route> = [
+    { path: '/getComponent', method: 'get', resolve: getComponent },
+]
+
+function getComponent(req: IncomingMessage, res: ServerResponse) {
     let { url } = req
     const { f, h, b } = extractParams(url)
 
@@ -11,7 +20,7 @@ function getComponent(req, res) {
     res.end('ok.')
 }
 
-function resolve(req, res) {
+function resolve(req: IncomingMessage, res: ServerResponse) {
     let { method, url } = req
     url = trimParams(url)
     const maybeRoute = routes.find(
