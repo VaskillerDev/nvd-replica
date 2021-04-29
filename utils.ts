@@ -1,7 +1,6 @@
-﻿'use strict'
-const qsParser = require('querystring')
+﻿import * as qsParser from 'querystring'
 
-function trimParams(url) {
+export function trimParams(url : string) {
     if (!url) return null
     try {
         return url.split('?')[0]
@@ -10,7 +9,7 @@ function trimParams(url) {
     }
 }
 
-function trimPath(url) {
+export function trimPath(url : string) {
     if (!url) return null
     try {
         return url.split('?')[1]
@@ -19,18 +18,11 @@ function trimPath(url) {
     }
 }
 
-function eqStr(str0, str1) {
+export function eqStr(str0: string, str1 : string) {
     return str0.toLowerCase() === str1.toLowerCase()
 }
 
-function extractParams(url) {
-    url = trimPath(url)
+export function extractParams(url : string) {
+    url = trimPath(url) as string
     return qsParser.parse(url)
-}
-
-module.exports = {
-    trimParams,
-    trimPath,
-    eqStr,
-    extractParams,
 }
