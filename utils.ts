@@ -1,6 +1,6 @@
 ﻿import * as qsParser from 'querystring'
 
-export function trimParams(url : string) {
+export function trimParams(url: string) {
     if (!url) return null
     try {
         return url.split('?')[0]
@@ -9,7 +9,7 @@ export function trimParams(url : string) {
     }
 }
 
-export function trimPath(url : string) {
+export function trimPath(url: string) {
     if (!url) return null
     try {
         return url.split('?')[1]
@@ -18,11 +18,11 @@ export function trimPath(url : string) {
     }
 }
 
-export function eqStr(str0: string, str1 : string) {
+export function eqStr(str0: string, str1: string) {
     return str0.toLowerCase() === str1.toLowerCase()
 }
 
-export function extractParams(url : string) {
+export function extractParams(url: string) {
     url = trimPath(url) as string
     return qsParser.parse(url)
 }

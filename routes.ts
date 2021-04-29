@@ -23,7 +23,9 @@ export function resolve(req: IncomingMessage, res: ServerResponse) {
     let { method, url } = req
     url = trimParams(url as string) as string
     const maybeRoute = routes.find(
-        route => eqStr(route.path, url as string) && eqStr(route.method, method as string)
+        route =>
+            eqStr(route.path, url as string) &&
+            eqStr(route.method, method as string)
     )
 
     if (!maybeRoute) {
