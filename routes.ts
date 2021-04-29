@@ -1,8 +1,7 @@
 ﻿'use strict'
 
 import { IncomingMessage, ServerResponse } from 'http'
-
-const { trimParams, eqStr, extractParams } = require('./utils')
+import { trimParams, eqStr, extractParams } from './utils'
 
 type Method = 'post' | 'get' | 'put' | 'delete'
 type ResolveFuncSignature = (req: IncomingMessage, res: ServerResponse) => void
@@ -14,17 +13,17 @@ const routes: Array<Route> = [
 
 function getComponent(req: IncomingMessage, res: ServerResponse) {
     let { url } = req
-    const { f, h, b } = extractParams(url)
+    const { f, h, b } = extractParams(url as string)
 
     res.writeHead(200)
     res.end('ok.')
 }
 
-function resolve(req: IncomingMessage, res: ServerResponse) {
+export function resolve(req: IncomingMessage, res: ServerResponse) {
     let { method, url } = req
-    url = trimParams(url)
+    url = trimParams(url as string) as string
     const maybeRoute = routes.find(
-        route => eqStr(route.path, url) && eqStr(route.method, method)
+        route => eqStr(route.path, url as string) && eqStr(route.method, method as string)
     )
 
     if (!maybeRoute) {
@@ -32,9 +31,4 @@ function resolve(req: IncomingMessage, res: ServerResponse) {
         return // end
     }
     maybeRoute.resolve(req, res)
-}
-
-module.exports = {
-    routes: routes,
-    resolve: resolve,
 }
