@@ -3,8 +3,8 @@ import fs from 'fs'
 import https, { ServerOptions } from 'https'
 import http, { IncomingMessage, ServerResponse } from 'http'
 
-import syncWithNVD from './syncWithNVD'
-import * as Routes from './routes'
+import syncWithNVD from './src/syncWithNVD'
+import * as Routes from './src/routes'
 
 type SchedulerContainer = {
     [key: string]: string
