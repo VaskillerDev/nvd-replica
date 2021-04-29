@@ -1,5 +1,5 @@
-﻿const scheduler = require('node-schedule')
-const fs = require('fs')
+﻿import * as scheduler from 'node-schedule'
+import fs from 'fs'
 import https, { ServerOptions } from 'https'
 import http, { IncomingMessage, ServerResponse } from 'http'
 
@@ -19,12 +19,13 @@ scheduler.scheduleJob(time['04:00:30'], syncWithNVD) // download cve archives in
 
 const port = 3000
 const key: MaybeBuffer =
-    fs.existsSync(process.env.PATH_TO_KEY) &&
-    fs.readFileSync(process.env.PATH_TO_KEY)
+    (fs.existsSync(process.env.PATH_TO_KEY as string) &&
+    fs.readFileSync(process.env.PATH_TO_KEY as string)) as MaybeBuffer
 const cert: MaybeBuffer =
-    fs.existsSync(process.env.PATH_TO_CERT) &&
-    fs.readFileSync(process.env.PATH_TO_CERT)
-const options: ServerOptions = { cert, key }
+    (fs.existsSync(process.env.PATH_TO_CERT as string) &&
+    fs.readFileSync(process.env.PATH_TO_CERT as string)) as MaybeBuffer
+
+const options: ServerOptions = { cert , key }
 const useHttps = key && cert
 
 function onStartCallback() {
