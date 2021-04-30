@@ -8,24 +8,24 @@ type ResolveFuncSignature = (req: IncomingMessage, res: ServerResponse) => void
 type Route = { path: string; method: Method; resolve: ResolveFuncSignature }
 
 const routes: Array<Route> = [
-    { path: '/getComponent', method: 'get', resolve: getComponent },
+    { path: '/cve', method: 'get', resolve: getCve }, // ?soft=nginx
 ]
 
-function getComponent(req: IncomingMessage, res: ServerResponse) {
+function getCve(req: IncomingMessage, res: ServerResponse) {
     let { url } = req
-    const { f, h, b } = extractParams(url as string)
-
+    const { soft } = extractParams(url as string)
+    
     res.writeHead(200)
     res.end('ok.')
 }
 
 export function resolve(req: IncomingMessage, res: ServerResponse) {
-    let { method, url } = req
-    url = trimParams(url as string) as string
+    let { method, url } = req as {method: string, url: string}
+    url = trimParams(url) as string
     const maybeRoute = routes.find(
         route =>
-            eqStr(route.path, url as string) &&
-            eqStr(route.method, method as string)
+            eqStr(route.path, url) &&
+            eqStr(route.method, method)
     )
 
     if (!maybeRoute) {
