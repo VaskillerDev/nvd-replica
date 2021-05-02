@@ -1,7 +1,5 @@
-﻿import path from "path";
-import fs from "fs";
+﻿import fs from "fs";
 import Pick from 'stream-json/filters/Pick';
-
 
 type CveInfo = {cveName: string, cweType: string, description: string}
 type JsonToken = {name: string, value: string}
