@@ -13,9 +13,11 @@ type MaybeBuffer = Buffer | string
 
 const time: SchedulerContainer = Object.create(null) as SchedulerContainer
 time['00:00:50'] = '50 * * * * *'
+time['00:02:50'] = '50 2 * * * *'
 time['04:00:30'] = '30 * 4 * * *'
 
-scheduler.scheduleJob(time['00:00:50'], syncWithNVD) // download cve archives in this time
+syncWithNVD().catch(e => console.log(e))
+scheduler.scheduleJob(time['00:02:50'], syncWithNVD)
 
 const port = 3000
 const key: MaybeBuffer = (fs.existsSync(process.env.PATH_TO_KEY as string) &&
