@@ -14,18 +14,16 @@ const routes: Array<Route> = [
 function getCve(req: IncomingMessage, res: ServerResponse) {
     let { url } = req
     const { soft } = extractParams(url as string)
-    
+
     res.writeHead(200)
     res.end('ok.')
 }
 
 export function resolve(req: IncomingMessage, res: ServerResponse) {
-    let { method, url } = req as {method: string, url: string}
+    let { method, url } = req as { method: string; url: string }
     url = trimParams(url) as string
     const maybeRoute = routes.find(
-        route =>
-            eqStr(route.path, url) &&
-            eqStr(route.method, method)
+        route => eqStr(route.path, url) && eqStr(route.method, method)
     )
 
     if (!maybeRoute) {
