@@ -6,8 +6,10 @@
     "main": "./dist/app.js",
     "exports": "./dist/app.js",
     "scripts": {
-        "start:dev": "npx tsc | node --experimental-specifier-resolution=node dist/app.js",
-        "searchInJson:dev": "npx tsc | node --experimental-specifier-resolution=node dist/src/searchInJson.js"
+        "clear:cve": "rm -R cve",
+        "clear:dist": "rm -R dist",
+        "start:dev": "npm run clear:cve && npm run clear:dist && mkdir dist && npx tsc && node --experimental-specifier-resolution=node dist/app.js",
+        "searchInJson:dev": "npx tsc && node --experimental-specifier-resolution=node dist/src/searchInJson.js"
     },
     "keywords": [],
     "author": "",
