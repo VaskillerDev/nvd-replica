@@ -2,6 +2,8 @@
 import path from 'path'
 import Filter from 'stream-json/filters/Filter'
 import Asm from 'stream-json/Assembler'
+import { CveInfo } from './types/CveInfo'
+import { StorageType } from './types/StorageType'
 
 const regexCveItems = new RegExp(
     'CVE_Items.[\\d]+.cve.(CVE_data_meta|problemtype|description.description_data.0)'
@@ -9,6 +11,15 @@ const regexCveItems = new RegExp(
 const __dirname = path.resolve()
 const dirForData = path.resolve(__dirname, './cve')
 const pathToStorage = dirForData + path.sep + 'cveStorage.csv'
+
+function pushTo(data: CveInfo, storageType: StorageType) {
+    if (storageType === StorageType.Csv) {
+        const csvLine = `"${data.cveName}";"${data.cweType}";"${data.description}"\n`
+        fs.appendFile(pathToStorage, csvLine, err => err && console.error(err))
+    } else if (storageType === StorageType.Mongo) {
+        // todo: continue
+    }
+}
 
 function pushJsonToStorage(pathToJsonFile: string) {
     const json = fs.createReadStream(pathToJsonFile)
@@ -27,14 +38,14 @@ function pushJsonToStorage(pathToJsonFile: string) {
 
         cveItems.forEach((cveItem: any) => {
             // todo: typing
-            const cveName = `"${cveItem.cve.CVE_data_meta.ID}"`
+            const cveName = cveItem.cve.CVE_data_meta.ID
             const cweType =
-                `"${cveItem.cve.problemtype.problemtype_data[0].description[0]?.value}"` ||
-                '"nothing"'
-            const description = `"${cveItem.cve.description.description_data[0].value}"`
-            const csv = cveName + ';' + cweType + ';' + description + '\n'
-
-            fs.appendFile(pathToStorage, csv, err => err && console.error(err))
+                cveItem.cve.problemtype.problemtype_data[0].description[0]
+                    ?.value || 'nothing'
+            const description =
+                cveItem.cve.description.description_data[0].value
+            const cveInfo: CveInfo = { cveName, cweType, description }
+            pushTo(cveInfo, StorageType.Csv)
         })
     })
 }
