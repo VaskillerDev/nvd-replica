@@ -2,6 +2,7 @@
 import fs from 'fs'
 import https from 'https'
 import zlib from 'zlib'
+import pushJsonToStorage from "./pushJsonToStorage";
 
 const startYear = 2002
 const endYear = new Date().getFullYear()
@@ -22,6 +23,10 @@ function makeLinkToCveDownload(year: Year) {
 
 function makePathToJsonGz(year: Year) {
     return path.resolve(dirForData, `nvdcve-1.1-${year}.json.gz`)
+}
+
+function makePathToJson(year: Year) {
+    return path.resolve(dirForData, `nvdcve-1.1-${year}.json`)
 }
 
 async function downloadJsonGz(link: string) {
@@ -45,7 +50,7 @@ function trimExt(fileName: string) {
 }
 
 async function unzipJsonGz(year: Year) {
-    new Promise(resolve => {
+   return new Promise(resolve => {
         const pathToFile = makePathToJsonGz(year)
         const jsonPathToFile = trimExt(pathToFile)
 
@@ -84,9 +89,26 @@ async function unzipAllCve() {
     })
 }
 
+async function pushJsonCveToStorage(year: Year) {
+        const pathToJsonFile = makePathToJson(year)
+        pushJsonToStorage(pathToJsonFile)
+}
+
+async function pushAllCveToStorage() {
+    return new Promise(async resolve => {
+        for (let year = startYear; year <= endYear; year++) {
+            pushJsonCveToStorage(year).catch(e=>console.error(e))
+        }
+        pushJsonCveToStorage(recent).catch(e=>console.error(e))
+        pushJsonCveToStorage(modified).catch(e=>console.error(e))
+        resolve(true)
+    })
+}
+
 async function syncWithNVD() {
     await downloadAllCve()
     await unzipAllCve()
+    await pushAllCveToStorage()
 }
 
 export default syncWithNVD
