@@ -26,3 +26,7 @@ export function extractParams(url: string) {
     url = trimPath(url) as string
     return qsParser.parse(url)
 }
+
+export function makePathToCsvStorage(pathToJsonFile: string) {
+    return pathToJsonFile.split('.').slice(0, -1).join('.') + '.storage.csv'
+}
