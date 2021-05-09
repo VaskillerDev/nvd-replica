@@ -8,7 +8,8 @@
     "scripts": {
         "clear:cve": "rm -R cve",
         "clear:dist": "rm -R dist",
-        "start:dev": "npm run clear:cve && npm run clear:dist && mkdir dist && npx tsc && node --experimental-specifier-resolution=node dist/app.js",
+        "start:clear": "npm run clear:cve && npm run clear:dist && mkdir dist && npx tsc && node --experimental-specifier-resolution=node dist/app.js",
+        "start:dev": "npm run clear:dist && mkdir dist && npx tsc && node --experimental-specifier-resolution=node dist/app.js",
         "pushJsonToStorage:dev": "npx tsc && node --experimental-specifier-resolution=node dist/src/pushJsonToStorage.js",
         "searchInStorage:dev": "npx tsc && node --experimental-specifier-resolution=node dist/src/searchInStorage.js"
     },
@@ -17,6 +18,7 @@
     "license": "ISC",
     "dependencies": {
         "@types/stream-json": "^1.5.1",
+        "dotenv": "^9.0.1",
         "fetch": "^1.1.0",
         "node-schedule": "^2.0.0",
         "stream-json": "^1.7.1"
