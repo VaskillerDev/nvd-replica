@@ -31,7 +31,8 @@ async function collectDataFromStorageCsv(
 
         rl.on('line', function (line) {
             let lwr = line.toLowerCase()
-            if (regex.test(lwr)) storage.push(line)
+            const cpe23Uri = lwr.split(';').pop() as string
+            if (regex.test(cpe23Uri)) storage.push(line)
         })
 
         rl.on('close', function () {
@@ -71,7 +72,6 @@ async function searchInStorage(
         storage = storage.concat(
             await collectDataFromStorageCsvByYear(modified, keyword)
         )
-        console.log(storage)
         resolve(storage)
     })
 }
