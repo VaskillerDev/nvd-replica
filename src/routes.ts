@@ -16,13 +16,21 @@ function getCve(req: IncomingMessage, res: ServerResponse) {
     let { url } = req
     const { soft } = extractParams(url as string) as { soft: string }
 
+    if (soft === '' || !soft) {
+        res.setHeader('Content-Type', 'application/json;charset=utf-8')
+        res.writeHead(404)
+        const result = { result: [] }
+        res.end(JSON.stringify(result))
+        return
+    }
+
     searchInStorage(StorageType.Csv, soft).then(searchRes => {
         const rs = new Stream.Readable()
-
+        const result = { result: searchRes }
+        res.setHeader('Content-Type', 'application/json;charset=utf-8')
         res.writeHead(200)
         rs.pipe(res)
-
-        searchRes.forEach(line => rs.push(line))
+        rs.push(JSON.stringify(result))
         rs.push(null)
     })
 }
