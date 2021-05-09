@@ -6,7 +6,7 @@ import { StorageType } from './types/StorageType'
 import { makePathToCsvStorage } from './utils'
 
 const regexCveItems = new RegExp(
-    'CVE_Items.[\\d]+.cve.(CVE_data_meta|problemtype|description.description_data.0)'
+    'CVE_Items.[\\d]+.(configurations|cve.(CVE_data_meta|problemtype|description.description_data.0))'
 )
 //const __dirname = path.resolve()
 //const dirForData = path.resolve(__dirname, './cve')
@@ -18,7 +18,7 @@ function pushTo(
     pathToStorage: string | null = null
 ) {
     if (storageType === StorageType.Csv) {
-        const csvLine = `"${data.cveName}";"${data.cweType}";"${data.description}"\n`
+        const csvLine = `"${data.cveName}";"${data.cweType}";"${data.description}";"${data.cpe23Uri}"\n`
         fs.appendFile(
             pathToStorage as string,
             csvLine,
@@ -48,18 +48,31 @@ function pushJsonToStorage(pathToJsonFile: string) {
 
         cveItems.forEach((cveItem: any) => {
             // todo: typing
-            const cveName = cveItem.cve.CVE_data_meta.ID
-            const cweType =
-                cveItem.cve.problemtype.problemtype_data[0].description[0]
-                    ?.value || 'nothing'
-            const description =
-                cveItem.cve.description.description_data[0].value
-
-            const cveInfo: CveInfo = { cveName, cweType, description }
-            const pathToCsvStorage = makePathToCsvStorage(
-                pathToJsonFile as string
-            )
-            pushTo(cveInfo, StorageType.Csv, pathToCsvStorage)
+            try {
+                const cveName = cveItem.cve.CVE_data_meta.ID
+                const cweType =
+                    cveItem.cve.problemtype.problemtype_data[0].description[0]
+                        ?.value || 'nothing'
+                const description =
+                    cveItem.cve.description.description_data[0].value
+                const cpe23Uri =
+                    cveItem.configurations.nodes[0]?.['cpe_match']?.[0]?.[
+                        'cpe23Uri'
+                    ] || 'nothing'
+                const cveInfo: CveInfo = {
+                    cveName,
+                    cweType,
+                    description,
+                    cpe23Uri,
+                }
+                const pathToCsvStorage = makePathToCsvStorage(
+                    pathToJsonFile as string
+                )
+                pushTo(cveInfo, StorageType.Csv, pathToCsvStorage)
+            } catch (e) {
+                console.log(cveItem.cve)
+                console.error(e)
+            }
         })
     })
 }
