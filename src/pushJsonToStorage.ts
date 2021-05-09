@@ -1,21 +1,29 @@
 ﻿import fs from 'fs'
-import path from 'path'
 import Filter from 'stream-json/filters/Filter'
 import Asm from 'stream-json/Assembler'
 import { CveInfo } from './types/CveInfo'
 import { StorageType } from './types/StorageType'
+import { makePathToCsvStorage } from './utils'
 
 const regexCveItems = new RegExp(
     'CVE_Items.[\\d]+.cve.(CVE_data_meta|problemtype|description.description_data.0)'
 )
-const __dirname = path.resolve()
-const dirForData = path.resolve(__dirname, './cve')
-const pathToStorage = dirForData + path.sep + 'cveStorage.csv'
+//const __dirname = path.resolve()
+//const dirForData = path.resolve(__dirname, './cve')
+//const pathToStorage = dirForData + path.sep + 'cveStorage.csv'
 
-function pushTo(data: CveInfo, storageType: StorageType) {
+function pushTo(
+    data: CveInfo,
+    storageType: StorageType,
+    pathToStorage: string | null = null
+) {
     if (storageType === StorageType.Csv) {
         const csvLine = `"${data.cveName}";"${data.cweType}";"${data.description}"\n`
-        fs.appendFile(pathToStorage, csvLine, err => err && console.error(err))
+        fs.appendFile(
+            pathToStorage as string,
+            csvLine,
+            err => err && console.error(err)
+        )
     } else if (storageType === StorageType.Mongo) {
         // todo: continue
     }
@@ -34,7 +42,9 @@ function pushJsonToStorage(pathToJsonFile: string) {
      */
     asm.on('done', asm => {
         const cveItems = asm.current['CVE_Items']
-        console.log('load .json to storage ' + pathToStorage)
+        console.log(
+            'load .json to storage ' + makePathToCsvStorage(pathToJsonFile)
+        )
 
         cveItems.forEach((cveItem: any) => {
             // todo: typing
@@ -44,8 +54,12 @@ function pushJsonToStorage(pathToJsonFile: string) {
                     ?.value || 'nothing'
             const description =
                 cveItem.cve.description.description_data[0].value
+
             const cveInfo: CveInfo = { cveName, cweType, description }
-            pushTo(cveInfo, StorageType.Csv)
+            const pathToCsvStorage = makePathToCsvStorage(
+                pathToJsonFile as string
+            )
+            pushTo(cveInfo, StorageType.Csv, pathToCsvStorage)
         })
     })
 }
