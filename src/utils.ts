@@ -30,3 +30,7 @@ export function extractParams(url: string) {
 export function makePathToCsvStorage(pathToJsonFile: string) {
     return pathToJsonFile.split('.').slice(0, -1).join('.') + '.storage.csv'
 }
+
+export function toBoolean(str: string) {
+    return str === 'true'
+}
