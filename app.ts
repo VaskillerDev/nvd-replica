@@ -8,6 +8,7 @@ dotenv.config()
 
 import syncWithNVD from './src/syncWithNVD'
 import * as Routes from './src/routes'
+import toBoolean from './src/toBoolean'
 
 type SchedulerContainer = {
     [key: string]: string
@@ -19,8 +20,14 @@ time['00:00:50'] = '50 * * * * *'
 time['00:02:50'] = '50 2 * * * *'
 time['04:00:30'] = '30 * 4 * * *'
 
-if (!process.env.APP_SKIP_SYNC_WITH_NVD)
+const isSkipSyncWithNvd = toBoolean(
+    process.env.APP_SKIP_SYNC_WITH_NVD as string
+)
+
+if (!isSkipSyncWithNvd) {
     syncWithNVD().catch(e => console.log(e))
+}
+
 scheduler.scheduleJob(time['00:02:50'], syncWithNVD)
 
 const port = 3000
@@ -34,7 +41,7 @@ const useHttps = key && cert
 
 function onStartCallback() {
     console.log(
-        'Skip sync with NVD: ' + process.env.APP_SKIP_SYNC_WITH_NVD,
+        'Skip sync with NVD: ' + isSkipSyncWithNvd,
         '\nPort: ' + port,
         '\nHttps: ' + useHttps
     )
