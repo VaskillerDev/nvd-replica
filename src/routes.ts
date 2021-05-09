@@ -1,7 +1,8 @@
-﻿'use strict'
-
-import { IncomingMessage, ServerResponse } from 'http'
-import { trimParams, eqStr, extractParams } from './utils'
+﻿import { IncomingMessage, ServerResponse } from 'http'
+import { eqStr, extractParams, trimParams } from './utils'
+import searchInStorage from './searchInStorage'
+import { StorageType } from './types/StorageType'
+import { Stream } from 'node:stream'
 
 type Method = 'post' | 'get' | 'put' | 'delete'
 type ResolveFuncSignature = (req: IncomingMessage, res: ServerResponse) => void
@@ -13,10 +14,17 @@ const routes: Array<Route> = [
 
 function getCve(req: IncomingMessage, res: ServerResponse) {
     let { url } = req
-    const { soft } = extractParams(url as string)
+    const { soft } = extractParams(url as string) as { soft: string }
 
-    res.writeHead(200)
-    res.end('ok.')
+    searchInStorage(StorageType.Csv, soft).then(searchRes => {
+        const rs = new Stream.Readable()
+
+        res.writeHead(200)
+        rs.pipe(res)
+
+        searchRes.forEach(line => rs.push(line))
+        rs.push(null)
+    })
 }
 
 export function resolve(req: IncomingMessage, res: ServerResponse) {
