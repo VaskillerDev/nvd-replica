@@ -1,4 +1,5 @@
 ﻿import * as qsParser from 'querystring'
+import equal from "deep-equal";
 
 export function trimParams(url: string) {
     if (!url) return null
@@ -37,4 +38,14 @@ export function makePathToCsvStorage(pathToJsonFile: string) {
 
 export function toBoolean(str: string) {
     return str === 'true'
+}
+
+export function lowerCaseDeepEqual<T>(l : T, r :T): boolean {
+    const lwL = JSON.parse(JSON.stringify(l).toLowerCase())
+    const lwR = JSON.parse(JSON.stringify(r).toLowerCase())
+    return equal(lwL, lwR)
+}
+
+export function deepEqual(l: object, r: object): boolean {
+    return equal(l,r)
 }
