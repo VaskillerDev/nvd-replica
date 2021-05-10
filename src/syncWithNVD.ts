@@ -3,6 +3,8 @@ import fs from 'fs'
 import https from 'https'
 import zlib from 'zlib'
 import pushJsonToStorage from './pushJsonToStorage'
+import {trimExt} from "./utils";
+import {MetaData} from "./types/MetaData";
 
 const startYear = 2002
 const endYear = new Date().getFullYear()
@@ -30,16 +32,6 @@ function makePathToJson(year: Year) {
     return path.resolve(dirForData, `nvdcve-1.1-${year}.json`)
 }
 
-async function writeMetaData() {
-    const ws = fs.createWriteStream(dirForData + path.sep + 'cve.meta')
-    const date = new Date()
-
-    const mm = date.getMinutes()
-    const hh = date.getHours()
-    const dd = date.getDay()
-    //todo: continue
-}
-
 async function downloadJsonGz(link: string) {
     return new Promise(async resolve => {
         const downloadedFileName = path.basename(link)
@@ -54,10 +46,6 @@ async function downloadByYear(year: Year) {
     const link = makeLinkToCveDownload(year)
     await downloadJsonGz(link)
     await console.log('download by ' + link)
-}
-
-function trimExt(fileName: string) {
-    return fileName.split('.').slice(0, -1).join('.')
 }
 
 async function unzipJsonGz(year: Year) {
@@ -116,10 +104,45 @@ async function pushAllCveToStorage() {
     })
 }
 
+export function tryWriteMetaData() : boolean {
+    const pathToMeta = dirForData + path.sep + '.cve';
+    if (!fs.existsSync(pathToMeta)) {
+        writeMetaData(pathToMeta).catch(console.error)
+        return true;
+    }
+    
+    const metaStr = fs.readFileSync(pathToMeta).toString('utf-8');
+    const meta : MetaData = JSON.parse(metaStr);
+    
+    const dateFromMeta = new Date(meta.date) as unknown as number;
+    const dateNow = new Date() as unknown as number;
+    const diffTime = Math.abs(dateNow - dateFromMeta);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    if (diffDays < 4) return false;
+    
+    fs.unlinkSync(pathToMeta);
+    writeMetaData(pathToMeta).catch(console.error)
+    return true;
+} 
+
+async function writeMetaData(pathToMeta : string) {
+    const ws = fs.createWriteStream(pathToMeta)
+    const date = new Date()
+    const dateUtc = date.toUTCString()
+
+    const meta : MetaData = {
+        date: dateUtc
+    }
+    const metaStr = JSON.stringify(meta)
+    
+    const buf = Buffer.alloc(Buffer.byteLength(metaStr), metaStr);
+    ws.write(buf,'utf-8',console.error);
+}
+
 async function syncWithNVD() {
+    if (!tryWriteMetaData()) return;
     await downloadAllCve()
     await unzipAllCve()
     await pushAllCveToStorage()
 }
-
 export default syncWithNVD

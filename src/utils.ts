@@ -27,8 +27,12 @@ export function extractParams(url: string) {
     return qsParser.parse(url)
 }
 
+export function trimExt(fileName: string) {
+    return fileName.split('.').slice(0, -1).join('.')
+}
+
 export function makePathToCsvStorage(pathToJsonFile: string) {
-    return pathToJsonFile.split('.').slice(0, -1).join('.') + '.storage.csv'
+    return trimExt(pathToJsonFile) + '.storage.csv'
 }
 
 export function toBoolean(str: string) {
