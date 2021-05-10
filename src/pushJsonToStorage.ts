@@ -5,12 +5,15 @@ import { CveInfo } from './types/CveInfo'
 import { StorageType } from './types/StorageType'
 import { makePathToCsvStorage } from './utils'
 
+/* 
+    in json:
+    configurations
+    cve.CVE_data_metaproblemtype.problemtype_data[0].description[0].value
+    cve.CVE_data_metadescription.description_data[0].value
+*/
 const regexCveItems = new RegExp(
     'CVE_Items.[\\d]+.(configurations|cve.(CVE_data_meta|problemtype|description.description_data.0))'
 )
-//const __dirname = path.resolve()
-//const dirForData = path.resolve(__dirname, './cve')
-//const pathToStorage = dirForData + path.sep + 'cveStorage.csv'
 
 function pushTo(
     data: CveInfo,
@@ -35,11 +38,6 @@ function pushJsonToStorage(pathToJsonFile: string) {
     const pl = json.pipe(Filter.withParser({ filter: regexCveItems }))
     const asm = Asm.connectTo(pl)
 
-    /* in json:
-    cve.CVE_data_meta
-    problemtype.problemtype_data[0].description[0].value
-    description.description_data[0].value
-     */
     asm.on('done', asm => {
         const cveItems = asm.current['CVE_Items']
         console.log(
