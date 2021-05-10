@@ -8,7 +8,7 @@ dotenv.config()
 
 import syncWithNVD from './src/syncWithNVD'
 import * as Routes from './src/routes'
-import {toBoolean} from "./src/utils";
+import { toBoolean } from './src/utils'
 
 type SchedulerContainer = {
     [key: string]: string
