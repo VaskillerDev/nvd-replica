@@ -1,5 +1,5 @@
 ﻿import { IncomingMessage, ServerResponse } from 'http'
-import { lowerCaseDeepEqual, trimParams } from './utils'
+import {lowerCaseDeepEqual, translateRequest, trimParams} from './utils'
 import { Route, RouteResolve } from './types/HttpTypes'
 import getCve from './http/getCve'
 import { Method } from './types/HttpTypes'
@@ -24,11 +24,6 @@ export function resolve(req: IncomingMessage, res: ServerResponse) {
     }
 
     maybeRoute.resolve(req, res)
-}
-
-function translateRequest<T extends Route>(req: IncomingMessage): T {
-    let { method, url: path } = req as { method: Method; url: string }
-    return { method, path } as T
 }
 
 function matchRoutes(incomingRoute: Route, recordedRoute: Route): boolean {

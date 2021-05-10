@@ -1,5 +1,7 @@
 ﻿import * as qsParser from 'querystring'
 import equal from 'deep-equal'
+import {Method, Route} from "./types/HttpTypes";
+import {IncomingMessage} from "http";
 
 export function trimParams(url: string) {
     if (!url) return null
@@ -48,4 +50,9 @@ export function lowerCaseDeepEqual<T>(l: T, r: T): boolean {
 
 export function deepEqual(l: object, r: object): boolean {
     return equal(l, r)
+}
+
+export function translateRequest<T extends Route>(req: IncomingMessage): T {
+    let { method, url: path } = req as { method: Method; url: string }
+    return { method, path } as T
 }
