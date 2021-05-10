@@ -1,9 +1,9 @@
-﻿import {IncomingMessage, ServerResponse} from "http";
-import {extractParams} from "../utils";
-import searchInStorage from "../searchInStorage";
-import {StorageType} from "../types/StorageType";
-import {Stream} from "node:stream";
-import {ContentType} from "../types/HttpTypes";
+﻿import { IncomingMessage, ServerResponse } from 'http'
+import { extractParams } from '../utils'
+import searchInStorage from '../searchInStorage'
+import { StorageType } from '../types/StorageType'
+import { Stream } from 'node:stream'
+import { ContentType } from '../types/HttpTypes'
 
 export default function getCve(req: IncomingMessage, res: ServerResponse) {
     let { url } = req
