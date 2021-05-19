@@ -21,10 +21,6 @@ export function trimPath(url: string) {
     }
 }
 
-export function eqStr(str0: string, str1: string) {
-    return str0.toLowerCase() === str1.toLowerCase()
-}
-
 export function extractParams(url: string) {
     url = trimPath(url) as string
     return qsParser.parse(url)
