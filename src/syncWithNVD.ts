@@ -110,7 +110,6 @@ export function tryWriteMetaData(): boolean {
         writeMetaData(pathToMeta).catch(console.error)
         return true
     }
-
     const metaStr = fs.readFileSync(pathToMeta).toString('utf-8')
     const meta: MetaData = JSON.parse(metaStr)
 
@@ -126,6 +125,7 @@ export function tryWriteMetaData(): boolean {
 }
 
 async function writeMetaData(pathToMeta: string) {
+    tryCreateDirForData()
     const ws = fs.createWriteStream(pathToMeta)
     const date = new Date()
     const dateUtc = date.toUTCString()
@@ -137,6 +137,9 @@ async function writeMetaData(pathToMeta: string) {
 
     const buf = Buffer.alloc(Buffer.byteLength(metaStr), metaStr)
     ws.write(buf, 'utf-8', console.error)
+    ws.on('error', e => {
+        throw e
+    })
 }
 
 async function syncWithNVD() {

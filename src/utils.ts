@@ -1,7 +1,7 @@
 ﻿import * as qsParser from 'querystring'
 import equal from 'deep-equal'
-import {Method, Route} from "./types/HttpTypes";
-import {IncomingMessage} from "http";
+import { Method, Route } from './types/HttpTypes'
+import { IncomingMessage } from 'http'
 
 export function trimParams(url: string) {
     if (!url) return null

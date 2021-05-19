@@ -1,5 +1,5 @@
 ﻿import { IncomingMessage, ServerResponse } from 'http'
-import {lowerCaseDeepEqual, translateRequest, trimParams} from './utils'
+import { lowerCaseDeepEqual, translateRequest, trimParams } from './utils'
 import { Route, RouteResolve } from './types/HttpTypes'
 import getCve from './http/getCve'
 import { Method } from './types/HttpTypes'
