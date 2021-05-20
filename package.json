@@ -7,10 +7,16 @@
     "exports": "./dist/app.js",
     "scripts": {
         "start": "npm run start:dev",
+        
         "clear:cve": "rm -rf cve",
         "clear:dist": "rm -rf dist",
+        
         "start:clear": "npm run clear:cve && npm run clear:dist && mkdir dist && npx tsc && node --experimental-specifier-resolution=node --max-old-space-size=512 dist/app.js",
-        "start:dev": "npm run clear:dist && mkdir dist && npx tsc && node --experimental-specifier-resolution=node dist/app.js",
+        "start:dev": "npm run clear:dist && mkdir dist && npx tsc && node --experimental-specifier-resolution=node --max-old-space-size=512 dist/app.js dist/app.js",
+        
+        "test": "npm run pushJsonToStorageViaJq:test",
+        "pushJsonToStorageViaJq:test": "npx tsc && node --experimental-specifier-resolution=node dist/src/tests/pushJsonToStorageViaJq.test.js",
+        
         "pushJsonToStorage:dev": "npx tsc && node --experimental-specifier-resolution=node dist/src/pushJsonToStorage.js",
         "searchInStorage:dev": "npx tsc && node --experimental-specifier-resolution=node dist/src/searchInStorage.js"
     },

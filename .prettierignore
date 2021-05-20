@@ -2,3 +2,5 @@
 /cve
 # typescript
 /dist
+#package
+package.json
