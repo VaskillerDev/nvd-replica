@@ -2,7 +2,7 @@
 import fs from 'fs'
 import https from 'https'
 import zlib from 'zlib'
-import pushJsonToStorage from './pushJsonToStorage'
+import pushJsonToStorage, { Parser } from './pushJsonToStorage'
 import { trimExt } from './utils'
 import { MetaData } from './types/MetaData'
 
@@ -90,7 +90,7 @@ async function unzipAllCve() {
 
 async function pushJsonCveToStorage(year: Year) {
     const pathToJsonFile = makePathToJson(year)
-    pushJsonToStorage(pathToJsonFile)
+    pushJsonToStorage(pathToJsonFile, Parser.Jq)
 }
 
 async function pushAllCveToStorage() {
