@@ -82,45 +82,55 @@ function pushTo(
     }
 }
 
-function pushToStorageViaJq(pathToJsonFile: string) {
-    const catFile = `cat ${pathToJsonFile}`
-    const jqItemsAsJson = `.CVE_Items[] 
+async function pushToStorageViaJq(pathToJsonFile: string) {
+    return new Promise(async resolve => {
+        const catFile = `cat ${pathToJsonFile}`
+        const jqItemsAsJson = `.CVE_Items[] 
         | select(.cve.CVE_data_meta.ID) 
         | { 
             id: .cve.CVE_data_meta.ID, 
             desc: .cve.problemtype.problemtype_data[0].description[0].value,
             cpe23Uri: .configurations.nodes[0].cpe_match[0].cpe23Uri
           }`
-    const jqJsonToArray = `| [.id,.desc,.cpe23Uri]`
-    const jqToCsv = `| @csv`
+        const jqJsonToArray = `| [.id,.desc,.cpe23Uri]`
+        const jqToCsv = `| @csv`
 
-    const outputFile = makePathToCsvStorage(pathToJsonFile)
-    const toFile = `> ${outputFile}`
+        const outputFile = makePathToCsvStorage(pathToJsonFile)
+        const toFile = `> ${outputFile}`
 
-    const command = `${catFile} | jq '${jqItemsAsJson} ${jqJsonToArray} ${jqToCsv}' ${toFile}`
+        const command = `${catFile} | jq '${jqItemsAsJson} ${jqJsonToArray} ${jqToCsv}' ${toFile}`
 
-    const transformDataProcess = exec(command, (error, stdout, stderr) => {
-        if (error) throw error
-        if (stderr === '' || !stderr) return
+        const transformDataProcess = exec(command, (error, stdout, stderr) => {
+            if (error) throw error
+            if (stderr === '' || !stderr) return
 
-        console.error(stderr)
+            console.error(stderr)
+        })
+
+        transformDataProcess.on('exit', () => {
+            console.log('load .json to storage ' + outputFile)
+            resolve(true)
+        })
     })
-
-    transformDataProcess.on('exit', () =>
-        console.log('load .json to storage ' + outputFile)
-    )
 }
 
-function pushJsonToStorage(
+async function pushJsonToStorage(
     pathToJsonFile: string,
     parser: Parser = Parser.StreamJson
 ) {
-    switch (parser) {
-        case Parser.Jq:
-            return pushToStorageViaJq(pathToJsonFile)
-        case Parser.StreamJson:
-            return pushToStorageViaStreamJson(pathToJsonFile)
-    }
+    return new Promise(async resolve => {
+        await console.log('pushJsonToStorage...')
+        switch (parser) {
+            case Parser.Jq:
+                await pushToStorageViaJq(pathToJsonFile)
+                resolve(true)
+                break
+            case Parser.StreamJson:
+                await pushToStorageViaStreamJson(pathToJsonFile)
+                resolve(true)
+                break
+        }
+    })
 }
 
 export default pushJsonToStorage

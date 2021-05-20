@@ -89,17 +89,20 @@ async function unzipAllCve() {
 }
 
 async function pushJsonCveToStorage(year: Year) {
-    const pathToJsonFile = makePathToJson(year)
-    pushJsonToStorage(pathToJsonFile, Parser.Jq)
+    return new Promise(async resolve => {
+        const pathToJsonFile = makePathToJson(year)
+        await pushJsonToStorage(pathToJsonFile, Parser.Jq)
+        resolve(true)
+    })
 }
 
 async function pushAllCveToStorage() {
     return new Promise(async resolve => {
         for (let year = startYear; year <= endYear; year++) {
-            pushJsonCveToStorage(year).catch(e => console.error(e))
+            await pushJsonCveToStorage(year).catch(e => console.error(e))
         }
-        pushJsonCveToStorage(recent).catch(e => console.error(e))
-        pushJsonCveToStorage(modified).catch(e => console.error(e))
+        await pushJsonCveToStorage(recent).catch(e => console.error(e))
+        await pushJsonCveToStorage(modified).catch(e => console.error(e))
         resolve(true)
     })
 }
