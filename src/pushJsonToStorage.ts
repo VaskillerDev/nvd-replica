@@ -88,17 +88,18 @@ async function pushToStorageViaJq(pathToJsonFile: string) {
         const jqItemsAsJson = `.CVE_Items[] 
         | select(.cve.CVE_data_meta.ID) 
         | { 
-            id: .cve.CVE_data_meta.ID, 
-            desc: .cve.problemtype.problemtype_data[0].description[0].value,
+            cveName: .cve.CVE_data_meta.ID, 
+            cweType: .cve.problemtype.problemtype_data[0].description[0].value,
+            description: .cve.description.description_data[0].value,
             cpe23Uri: .configurations.nodes[0].cpe_match[0].cpe23Uri
           }`
-        const jqJsonToArray = `| [.id,.desc,.cpe23Uri]`
-        const jqToCsv = `| @csv`
+        const jqJsonToArray = `| [.cveName,.cweType,.description,.cpe23Uri]`
+        const jqToStringLine = `| join(";")`
 
         const outputFile = makePathToCsvStorage(pathToJsonFile)
         const toFile = `> ${outputFile}`
 
-        const command = `${catFile} | jq '${jqItemsAsJson} ${jqJsonToArray} ${jqToCsv}' ${toFile}`
+        const command = `${catFile} | jq -r '${jqItemsAsJson} ${jqJsonToArray} ${jqToStringLine}' ${toFile}`
 
         const transformDataProcess = exec(command, (error, stdout, stderr) => {
             if (error) throw error
