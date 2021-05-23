@@ -32,7 +32,7 @@ function makePathToJson(year: Year) {
     return path.resolve(dirForData, `nvdcve-1.1-${year}.json`)
 }
 
-async function downloadJsonGz(link: string) {
+function downloadJsonGz(link: string) {
     return new Promise(async resolve => {
         const downloadedFileName = path.basename(link)
         const pathToJsonGz = path.resolve(dirForData, downloadedFileName)
@@ -48,7 +48,7 @@ async function downloadByYear(year: Year) {
     await console.log('download by ' + link)
 }
 
-async function unzipJsonGz(year: Year) {
+function unzipJsonGz(year: Year) {
     return new Promise(resolve => {
         const pathToFile = makePathToJsonGz(year)
         const jsonPathToFile = trimExt(pathToFile)
@@ -66,45 +66,37 @@ async function unzipJsonGz(year: Year) {
 }
 
 async function downloadAllCve() {
-    return new Promise(async resolve => {
-        tryCreateDirForData()
-        for (let year = startYear; year <= endYear; year++) {
-            await downloadByYear(year)
-        }
-        await downloadByYear(recent)
-        await downloadByYear(modified)
-        resolve(true)
-    })
+    tryCreateDirForData()
+    for (let year = startYear; year <= endYear; year++) {
+        await downloadByYear(year)
+    }
+    await downloadByYear(recent)
+    await downloadByYear(modified)
+    return true
 }
 
 async function unzipAllCve() {
-    return new Promise(async resolve => {
-        for (let year = startYear; year <= endYear; year++) {
-            await unzipJsonGz(year)
-        }
-        await unzipJsonGz(recent)
-        await unzipJsonGz(modified)
-        resolve(true)
-    })
+    for (let year = startYear; year <= endYear; year++) {
+        await unzipJsonGz(year)
+    }
+    await unzipJsonGz(recent)
+    await unzipJsonGz(modified)
+    return true
 }
 
 async function pushJsonCveToStorage(year: Year) {
-    return new Promise(async resolve => {
-        const pathToJsonFile = makePathToJson(year)
-        await pushJsonToStorage(pathToJsonFile, Parser.Jq)
-        resolve(true)
-    })
+    const pathToJsonFile = makePathToJson(year)
+    await pushJsonToStorage(pathToJsonFile, Parser.Jq)
+    return true
 }
 
 async function pushAllCveToStorage() {
-    return new Promise(async resolve => {
-        for (let year = startYear; year <= endYear; year++) {
-            await pushJsonCveToStorage(year).catch(e => console.error(e))
-        }
-        await pushJsonCveToStorage(recent).catch(e => console.error(e))
-        await pushJsonCveToStorage(modified).catch(e => console.error(e))
-        resolve(true)
-    })
+    for (let year = startYear; year <= endYear; year++) {
+        await pushJsonCveToStorage(year).catch(e => console.error(e))
+    }
+    await pushJsonCveToStorage(recent).catch(e => console.error(e))
+    await pushJsonCveToStorage(modified).catch(e => console.error(e))
+    return true
 }
 
 export function tryWriteMetaData(): boolean {
